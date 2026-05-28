@@ -63,7 +63,8 @@ jobs:
         run: |
           pytest tests/ -v \
             --cov=. \
-            --cov-omit="dashboard/*,orchestration/*" \
+            --cov-omit="dashboard/*" \
+            --cov-omit="orchestration/*" \
             --cov-report=term-missing \
             --cov-fail-under=70
 
