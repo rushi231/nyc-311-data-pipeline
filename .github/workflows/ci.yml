@@ -1,0 +1,75 @@
+name: NYC 311 Pipeline CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: nyc_311
+          POSTGRES_USER: pipeline_user
+          POSTGRES_PASSWORD: test_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Init database schema
+        env:
+          PGPASSWORD: test_password
+        run: psql -h localhost -U pipeline_user -d nyc_311 -f sql/init.sql
+
+      - name: Write .env for tests
+        run: |
+          cp .env.example .env
+          sed -i 's/your_password_here/test_password/' .env
+
+      - name: Run tests with coverage
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_DB: nyc_311
+          POSTGRES_USER: pipeline_user
+          POSTGRES_PASSWORD: test_password
+        run: |
+          pytest tests/ -v \
+            --cov=. \
+            --cov-omit="dashboard/*,orchestration/*" \
+            --cov-report=term-missing \
+            --cov-fail-under=70
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: .coverage

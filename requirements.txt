@@ -1,0 +1,30 @@
+# Core
+requests==2.31.0
+pandas==2.1.4
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.25
+python-dotenv==1.0.0
+
+# Validation
+pandera==0.18.0
+great-expectations==0.18.8
+
+# Orchestration
+prefect==2.14.21
+
+# Transformation
+dbt-core==1.7.4
+dbt-postgres==1.7.4
+
+# Dashboard
+streamlit==1.31.0
+plotly==5.18.0
+
+# Testing
+pytest==7.4.4
+pytest-cov==4.1.0
+
+# Utils
+pydantic==2.5.3
+loguru==0.7.2
+tenacity==8.2.3
