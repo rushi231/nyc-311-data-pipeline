@@ -6,7 +6,8 @@ sqlalchemy==2.0.25
 python-dotenv==1.0.0
 
 # Validation
-pandera==0.18.0
+pandera==0.17.2
+multimethod==1.9.1
 great-expectations==0.18.8
 
 # Orchestration
