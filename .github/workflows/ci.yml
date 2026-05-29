@@ -60,13 +60,7 @@ jobs:
           POSTGRES_DB: nyc_311
           POSTGRES_USER: pipeline_user
           POSTGRES_PASSWORD: test_password
-        run: |
-          pytest tests/ -v \
-            --cov=. \
-            --cov-omit="dashboard/*" \
-            --cov-omit="orchestration/*" \
-            --cov-report=term-missing \
-            --cov-fail-under=70
+        run: pytest tests/ -v --cov=. --cov-omit="dashboard/*,orchestration/*" --cov-report=term-missing --cov-fail-under=70
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
